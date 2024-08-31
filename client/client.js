@@ -1,7 +1,7 @@
-const axios = require('axios');
-const { envVars } = require('./env');
-const { getCertificateAgent } = require('./certs');
-const { validateRequestConfig } = require('./validator');
+const axios = require('axios')
+const { envVars } = require('./env')
+const { getCertificateAgent } = require('./certs')
+const { validateRequestConfig } = require('./validator')
 
 /**
  * Cliente para interagir com APIs do Sicoob que são protegidas por OAuth2 (Client Credentials).
@@ -10,10 +10,10 @@ const { validateRequestConfig } = require('./validator');
  */
 class Client {
     constructor() {
-        this.baseUrlAuth = envVars.BASE_URL_AUTH;
-        this.clientId = envVars.CLIENT_ID;
-        this.certAgent = getCertificateAgent(envVars.CERTIFICATE_PATH, envVars.CERTIFICATE_PASSWORD);
-        this.baseUrl = envVars.BASE_URL;
+        this.baseUrlAuth = envVars.BASE_URL_AUTH
+        this.clientId = envVars.CLIENT_ID
+        this.certAgent = getCertificateAgent(envVars.CERTIFICATE_PATH, envVars.CERTIFICATE_PASSWORD)
+        this.baseUrl = envVars.BASE_URL
     }
 
     /**
@@ -28,7 +28,7 @@ class Client {
      */
     async getAccessToken(scope, metaToken = false) {
         if (!scope || typeof scope !== 'string') {
-            throw new Error("O parâmetro 'scope' é obrigatório e deve ser do tipo string.");
+            throw new Error("O parâmetro 'scope' é obrigatório e deve ser do tipo string.")
         }
 
         const reqConfig = {
@@ -43,13 +43,13 @@ class Client {
                 scope: scope
             }),
             httpsAgent: this.certAgent
-        };
+        }
 
         try {
-            const response = await axios(reqConfig);
-            return metaToken ? response.data : response.data.access_token;
+            const response = await axios(reqConfig)
+            return metaToken ? response.data : response.data.access_token
         } catch (error) {
-            throw new Error('Erro ao obter o accessToken: ' + (error.response?.data || error.message));
+            throw new Error('Erro ao obter o accessToken: ' + (error.response?.data || error.message))
         }
     }
 
@@ -65,50 +65,57 @@ class Client {
      * @param {Object} [config.params] - Parâmetros a serem passados na URL da requisição.
      * @param {Object} [config.addHeaders] - Cabeçalhos adicionais para a requisição. Considerando que alguns endpoints
      * necessitam de Headers adicionais ao padrão.
-     * @param {string} [config.accessTokenCache] - Token de acesso já obtido e reutilizado na requisição.Enviando
-     * esse parâmetros nao sera obtido um novo Token de acesso antes de realizar a requisição.
+     * @param {string} [config.accessTokenCache] - Token de acesso já obtido e reutilizado na requisição. Enviando
+     * esse parâmetro não será obtido um novo Token de acesso antes de realizar a requisição.
      * 
      * @returns {Promise<Object>} A resposta da requisição.
      * 
      * @throws {Error} Se a configuração da requisição for inválida ou se ocorrer um erro na requisição.
      */
     async request(config) {
-        const {error} = validateRequestConfig(config);
+        const { error } = validateRequestConfig(config)
         if (error) {
-            throw new Error(`Configuração da requisição inválida: ${error.message}`);
+            throw new Error(`Configuração da requisição inválida: ${error.message}`)
         }
 
-        let accessToken = config.accessTokenCache || await this.getAccessToken(config.scope);
-
+        let accessToken = config.accessTokenCache || await this.getAccessToken(config.scope)
         if (!accessToken) {
-            throw new Error("Falha ao obter o token de acesso.");
+            throw new Error("Falha ao obter o token de acesso.")
         }
 
-        const headers = {
+        let url = `${this.baseUrl}${config.endpoint}`
+        if (config.params) {
+            const params = new URLSearchParams(config.params).toString()
+            url = `${url}?${params}`
+        }
+
+        let headers = {
             client_id: this.clientId,
             Accept: 'application/json',
-            "Content-Type": 'application/json',
             Authorization: `Bearer ${accessToken}`,
-            ...config.addHeaders || {}
-        };
+            ...config.addHeaders || {} //Caso houver headers adicionais enviados na config
+        }
 
         const requestConfig = {
-            url: `${this.baseUrl}${config.endpoint}`,
+            url,
             method: config.method,
-            headers: headers,
-            httpsAgent: this.certAgent,
-            ...(config.data && { data: config.data }),
-            ...(config.params && { params: config.params })
-        };
+            headers,
+            httpsAgent: this.certAgent
+        }
+
+        if (['POST', 'PUT', 'PATCH'].includes(config.method.toUpperCase())) {
+            requestConfig.headers["Content-Type"] = 'application/json'
+            requestConfig.data = config.data
+        }
 
         try {
-            const response = await axios(requestConfig);
-            return response;
+            const response = await axios(requestConfig)
+            return response
         } catch (error) {
-            console.error('Erro na requisição:', error.response?.data || error.message);
-            throw error;
+            console.error('Erro na requisição:', error.response?.data || error.message)
+            throw error
         }
     }
 }
 
-module.exports = Client;
+module.exports = Client
