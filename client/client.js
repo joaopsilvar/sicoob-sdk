@@ -83,10 +83,19 @@ class Client {
             throw new Error("Falha ao obter o token de acesso.")
         }
 
-        let url = `${this.baseUrl}${config.endpoint}`
+        let url = `${this.baseUrl}${config.endpoint}`;
         if (config.params) {
-            const params = new URLSearchParams(config.params).toString()
-            url = `${url}?${params}`
+            // Remove valores undefined e null
+            const filteredParams = Object.fromEntries(
+                Object.entries(config.params)
+                    .filter(([_, value]) => {
+                        value !== undefined && value !== null
+                    })
+            );
+
+            const params = new URLSearchParams(filteredParams).toString();
+
+            url = params ? `${url}?${params}` : url;
         }
 
         let headers = {

@@ -29,6 +29,12 @@
  * @property {string} LOTECOBV_WRITE - Permissão para alteração de vencimento em lote de cobranças com vencimento.
  * @property {string} PAYLOADLOCATION_READ - Permissão para consulta de locais de payloads.
  * @property {string} COBV_WRITE - Permissão para alteração de data de vencimento de cobranças com vencimento (COBV).
+ * @property {string} PIX_WRITE - Permissão para alteração de dados relacionados ao PIX.
+ * @property {string} COB_WRITE - Permissão para alteração de cobrança imediata.
+ * @property {string} PAYLOADLOCATION_WRITE - Permissão para alteração de locais de payloads.
+ * @property {string} LOTECOBV_READ - Permissão para consulta de lotes de cobrança com vencimento.
+ * @property {string} COB_READ - Permissão para consulta de cobrança imediata.
+ * @property {string} WEBHOOK_READ - Permissão para consulta de webhooks.
  * @property {string} SPB_ESCRITA - Permissão para realizar TEDs.
  * @property {string} SPB_CONSULTA - Permissão para consulta de TEDs.
  * @property {string} OPEN_ID - Ao enviar este scope, será retornado o `id_token` juntamente com o `access_token`. Alguns endpoints exigem que o `id_token` seja enviado.
@@ -59,9 +65,15 @@ const scopes = Object.freeze({
     LOTECOBV_WRITE: 'lotecobv.write',
     PAYLOADLOCATION_READ: 'payloadlocation.read',
     COBV_WRITE: 'cobv.write',
+    PIX_WRITE: 'pix.write',
+    COB_WRITE: 'cob.write',
+    PAYLOADLOCATION_WRITE: 'payloadlocation.write',
+    LOTECOBV_READ: 'lotecobv.read',
+    COB_READ: 'cob.read',
+    WEBHOOK_READ: 'webhook.read',
     SPB_ESCRITA: 'spb_escrita',
     SPB_CONSULTA: 'spb_consulta',
-    OPEN_ID : 'openid'
+    OPEN_ID: 'openid'
 });
 
 module.exports = { scopes };
