@@ -88,13 +88,10 @@ class Client {
             // Remove valores undefined e null
             const filteredParams = Object.fromEntries(
                 Object.entries(config.params)
-                    .filter(([_, value]) => {
-                        value !== undefined && value !== null
-                    })
+                    .filter(([_, value]) => value !== undefined && value !== null)
             );
 
             const params = new URLSearchParams(filteredParams).toString();
-
             url = params ? `${url}?${params}` : url;
         }
 
