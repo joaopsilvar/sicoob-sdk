@@ -20,7 +20,7 @@ const RateioCreditos = Joi.object({
 const BoletoValidator = Joi.object({
     numeroCliente: Joi.number().required(),
     codigoModalidade: Joi.number().valid(...Object.values(enums.codigoModalidade)).required(),
-    numeroContaCorrente: Joi.number().max(32).required(),
+    numeroContaCorrente: Joi.number().required(),
     codigoEspecieDocumento: Joi.string().valid(...Object.values(enums.codigoEspecieDocumento)).required(),
     dataEmissao: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).required(),
     nossoNumero: Joi.number().optional(),
